@@ -2,16 +2,22 @@
 ; Variable Setup
 ;
 
-ResultDateString := A_YYYY . "-" . A_MM . "-" . A_DD . "-" . A_Hour . A_Min
-
-ResultsOutput := A_Desktop . "\AutoMID Results " . ResultDateString . ".html"
-RegNumColumn := "AN" ; Which Column holds the vehicle IDs?
+; Which Column holds the vehicle IDs?
+RegNumColumn := "AN" 
+; Which Column contains vehicle Make?
 MakeColumn := "H"
+; Which Column contains vehicle Model?
 ModelColumn := "I"
-EmptyRowCount := 0
+; After how many empty rows should we assume that we have reached the end of the input data?
 EmptyRowThreshold := 20
+; Used to skip the header row.  Probably don't change this.
 StartRow := 2
-
+; Used to count how many consecutive empty rows have been passed.  This should start at zero.
+EmptyRowCount := 0
+; Used for output file naming to avoid collisions.  
+ResultDateString := A_YYYY . "-" . A_MM . "-" . A_DD . "-" . A_Hour . A_Min
+; Where do we put the output file? Can be customized, but do so carefully to avoid overwriting data.
+ResultsOutput := A_Desktop . "\AutoMID Results " . ResultDateString . ".html"
 
 
 ;Get Spreadsheet of vehicle information
@@ -28,6 +34,7 @@ ResultBoxYellow := "0xffcc08"
 UninsuredXRed := "0xd20f0f"
 InsuredCheckGreen := "0x0eac5b"
 ErrorBoxRed := "0xff0000"
+CaptchaBlue := "0x1a73e8"
 
 ;Initialize Results File
 FileAppend
@@ -39,17 +46,25 @@ FileAppend
 	table, td {
 		border: 1px solid black;
 		border-collapse: collapse;
+		padding: 3px 3px 3px 3px;
+		border-collapse: collapse;
+		vertical-align: top;
 	}
-	th {
-		overflow: auto;
-		text-align: center;
+    th {
+	   	border: 1px solid black;
+		position: sticky; 
+	   top: 0; 
+	   padding-right: 10px;
+	   vertical-align: bottom;
+	   text-align: left; 
+	   background-color: white;
 	}
 </style>
 </head>
 <body>
 <h1>AutoMID Results " ResultDateString "</h1>
 <table>
-<th><tr><td>Insured Status</td><td>Registration Number</td><td>Make</td><td>Model</td></tr></th>
+<tr><th>Insured Status</th><th>Registration Number</th><th>Make</th><th>Model</th></tr>
 "
 ), ResultsOutput
 
@@ -57,6 +72,7 @@ FileAppend
 ResultCheck(TargetWindow)
 {
 	WinActivate TargetWindow
+	WinMaximize TargetWindow
 	SendInput("{home}")
 	CoordMode "Pixel", "Window"
 	PixelSearch &ResultBoxX, &ResultBoxY, 0, 0, A_ScreenWidth, A_ScreenHeight, ResultBoxYellow
@@ -108,27 +124,60 @@ While EmptyRowCount < EmptyRowThreshold {
 	{
 	EmptyRowCount := 0
 	Sleep Random(100,600)
+	WinActivate MIDWindow
+	WinMaximize MIDWindow
 	SendInput("{home}")
 	Sleep Random(1000,2500)
-	CoordMode "Pixel"
+	CoordMode "Pixel", "Window"
 	PixelSearch &InputBoxX, &InputBoxY, 0, 0, A_ScreenWidth, A_ScreenHeight, InputBoxYellow
-	MouseClick "left", (InputBoxX + random(6,70)), (InputBoxY + Random(10,30))
+	MouseClick "left", (InputBoxX + random(6,80)), (InputBoxY + Random(10,20))
 	Sleep Random(100,600)
+	WinActivate MIDWindow
+	WinMaximize MIDWindow
 	SendInput(RegNum "{tab}{space}{tab 2}")
-	Sleep Random(3000,5500)
+	Sleep Random(750,6000)
 	SendText("`r")
 	Sleep Random(9000,13000) ;Wait for Captcha.
+	
+	
+	;Check for Captcha
+	CaptchaCheck := true
+	while CaptchaCheck = true
+	{
+		WinActivate MIDWindow
+		WinMaximize MIDWindow
+		CoordMode "Pixel", "Window"
+		PixelSearch &CaptchaX, &CaptchaY, 0, 0, A_ScreenWidth, A_ScreenHeight, CaptchaBlue
+		if isNumber(CaptchaX)
+		{
+			CaptchaCheck := true
+		}
+		else
+		{
+			CaptchaCheck := false
+		}
+		Sleep Random(750,2000)
+	}
+	
+	WinActivate MIDWindow
+	WinMaximize MIDWindow
 	SendInput("{tab 3}")
 	Sleep Random(100,600)
 	SendText("`r")
-		
+			
 	Result := "NO RESULT"
 	while Result = "NO RESULT"{
 		Sleep Random(5000,7500) ;Wait for results page to load.
 		Result := ResultCheck(MIDWindow)
 		if Result = "NO RESULT"
 		{
-		MsgBox "Unable to find result.`nIf there is a Captcha, please complete it`nand then click 'Check This Vehicle'."
+		WinActivate MIDWindow
+		WinMaximize MIDWindow
+		MsgBox "Help!`n`n( 1 ) Confirm that Registration Number " . RegNum . " is entered properly.`n( 2 ) If there is a Captcha, please complete it.`n( 3 ) Click 'Check This Vehicle' at the bottom of the page.`n( 4 ) Click OK on this box`n`nAnd then wait."
+		}
+		if A_Index > 2
+		{
+			Result := "ERROR CHECKING"
 		}
 	}
 	
@@ -139,7 +188,8 @@ While EmptyRowCount < EmptyRowThreshold {
 	), ResultsOutput
 
 	Sleep Random(2000,3000)
-		
+	WinActivate MIDWindow
+	WinMaximize MIDWindow
 	SendInput("{F5}")
 	}
 	CurrentRow := CurrentRow + 1
@@ -152,6 +202,7 @@ FileAppend "
 </html>
 )", ResultsOutput
 
+WinClose MIDWindow
 Xl.quit()
 
 Run (ResultsOutput)

@@ -26,7 +26,7 @@ Unless the script asks you to do so, do not click the "Check this vehicle" butto
 
 # Troubleshooting
 
-The declaration of which columns contain each vehicle's registration number, make, and model are set as variables at the beginning of the AutoMID.ahk file.  If the script does not properly parse your vehicle spreadsheet, open the AutoMID.ahk file using a plain text editor (such as Notepad.exe) and adjust the column variables as needed to fit your data.
+The declarations of which columns contain each vehicle's registration number, make, and model are set as variables at the beginning of the AutoMID.ahk file.  If the script does not properly parse your vehicle spreadsheet, open the AutoMID.ahk file using a plain text editor (such as Notepad.exe) and adjust the column variables as needed to fit your data.
 
 Sometimes, the script will accidentally "click" a link on the page.  If this happens, close the page that is launched.  Do not close the askMID website.
 

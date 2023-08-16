@@ -1,6 +1,6 @@
 # AutoMID
 
-A tool for checking the insurance status of multiple vehicles via [the askMID website](https://ownvehicle.askMID.com).
+A tool for checking the insurance status of multiple vehicles via [the UK's Motor Insurance Database website](https://ownvehicle.askMID.com).  This is intended to be an easy way for individuals and small business to check the statuses of their own vehicles.
 
 # Prerequisites
 

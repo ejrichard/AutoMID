@@ -1,6 +1,6 @@
 # AutoMID
 
-A tool for checking the insurance status of multiple vehicles via [the askMID website](https://ownvehicle.askMID.com).
+A tool for checking the insurance status of multiple vehicles via [the UK's Motor Insurance Database website](https://ownvehicle.askMID.com).  This is intended to be an easy way for individuals and small business to check the statuses of their own vehicles.
 
 # Prerequisites
 
@@ -8,7 +8,7 @@ This script uses AutoHotKey version 2.  Please download and install AutoHotKey v
 
 # Usage
 
-Upon launch, the script prompts the user to select an Excel spreadsheet containing the vehicle data.  The script will parse the spreadsheet, launch the askMID website, and attempt to enter the vehicle data into the form.
+With AutoHotKey installed, double-click on the AutoMID.ahk file to lauch the script.  The user will be prompted to select an Excel spreadsheet containing the vehicle data.  The script will parse the spreadsheet, launch the askMID website, and attempt to enter the vehicle data into the format.
 
 Once the script completes, it will launch a report of what it was able to find.  This report is saved on the user's desktop.
 
@@ -25,6 +25,8 @@ When challenged, the script cannot prove that it's not a robot (because it **is*
 Unless the script asks you to do so, do not click the "Check this vehicle" button.  This may cause the script to be out of sync with the active element on the webpage.
 
 # Troubleshooting
+
+The declarations of which columns contain each vehicle's registration number, make, and model are set as variables at the beginning of the AutoMID.ahk file.  If the script does not properly parse your vehicle spreadsheet, open the AutoMID.ahk file using a plain text editor (such as Notepad.exe) and adjust the column variables as needed to fit your data.
 
 Sometimes, the script will accidentally "click" a link on the page.  If this happens, close the page that is launched.  Do not close the askMID website.
 
